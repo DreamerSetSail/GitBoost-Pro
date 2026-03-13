@@ -1,0 +1,46 @@
+{
+  "name": "gitboost-pro",
+  "version": "1.0.0",
+  "description": "GitHub Accelerator & Repo Scanner - Fixes GitHub 404 errors and accelerates GitHub access",
+  "main": "index.js",
+  "bin": {
+    "gitboost": "index.js",
+    "gitboost-pro": "index.js"
+  },
+  "scripts": {
+    "start": "python gitboost_pro.py",
+    "run": "python gitboost_pro.py",
+    "update": "python gitboost_pro.py"
+  },
+  "keywords": [
+    "github",
+    "accelerator",
+    "hosts",
+    "dns",
+    "404",
+    "fix",
+    "git",
+    "repo",
+    "scanner"
+  ],
+  "author": "GitBoost Pro Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gitboost-pro/gitboost-pro"
+  },
+  "bugs": {
+    "url": "https://github.com/gitboost-pro/gitboost-pro/issues"
+  },
+  "homepage": "https://github.com/gitboost-pro/gitboost-pro#readme",
+  "engines": {
+    "node": ">=12.0.0",
+    "python": ">=3.6.0"
+  },
+  "dependencies": {
+    "shelljs": "^0.8.5"
+  },
+  "devDependencies": {
+    "eslint": "^8.45.0"
+  }
+}

@@ -12,6 +12,8 @@ import re
 import shutil
 import subprocess
 import ctypes
+import json
+import time
 from pathlib import Path
 
 # ================= 配置与语言包 =================
@@ -41,6 +43,9 @@ def detect_language():
 
 CURRENT_LANG = detect_language()
 
+# 配置文件路径
+CONFIG_FILE = Path(__file__).parent / "gitboost_config.json"
+
 # 语言字典
 TEXT = {
     'zh': {
@@ -69,7 +74,11 @@ TEXT = {
         'admin_unix_hint': "💡 Mac/Linux: 请使用 'sudo python3 gitboost_pro.py'",
         'network_error': "❌ 无法获取任何 IP，请检查网络连接。",
         'press_exit': "\n⛔ 按 [回车键] 退出...",
-        'press_close': "\n✅ 操作已完成。按 [回车键] 关闭窗口..."
+        'press_close': "\n✅ 操作已完成。按 [回车键] 关闭窗口...",
+        'current_update_interval': "当前自动更新时间间隔: {} 分钟",
+        'set_update_interval': "请输入自动更新时间间隔 (1-1440 分钟，默认 5 分钟): ",
+        'update_interval_set': "✅ 自动更新时间间隔已设置为 {} 分钟",
+        'invalid_interval': "⚠️ 无效的时间间隔，请输入 1-1440 之间的数字"
     },
     'en': {
         'title': "🚀 GitBoost Pro - GitHub Accelerator & Repo Scanner",
@@ -97,7 +106,11 @@ TEXT = {
         'admin_unix_hint': "💡 Mac/Linux: Run with 'sudo python3 gitboost_pro.py'",
         'network_error': "❌ Could not resolve any IPs. Please check your internet connection.",
         'press_exit': "\n⛔ Press [Enter] to exit...",
-        'press_close': "\n✅ Done. Press [Enter] to close..."
+        'press_close': "\n✅ Done. Press [Enter] to close...",
+        'current_update_interval': "Current auto-update interval: {} minutes",
+        'set_update_interval': "Please enter auto-update interval (1-1440 minutes, default 5): ",
+        'update_interval_set': "✅ Auto-update interval set to {} minutes",
+        'invalid_interval': "⚠️ Invalid interval, please enter a number between 1-1440"
     }
 }
 
@@ -105,7 +118,118 @@ def t(key):
     """获取当前语言的文本"""
     return TEXT[CURRENT_LANG].get(key, key)
 
+# ================= 配置管理函数 =================
+
+def load_config():
+    """加载配置文件"""
+    try:
+        if CONFIG_FILE.exists():
+            with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return {}
+
+def save_config(config):
+    """保存配置文件"""
+    try:
+        with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+            json.dump(config, f, indent=2, ensure_ascii=False)
+        return True
+    except Exception:
+        return False
+
+def get_update_interval():
+    """获取自动更新时间间隔"""
+    config = load_config()
+    return config.get('update_interval', 5)
+
+def set_update_interval(minutes):
+    """设置自动更新时间间隔"""
+    if 1 <= minutes <= 1440:
+        config = load_config()
+        config['update_interval'] = minutes
+        if save_config(config):
+            print(t('update_interval_set').format(minutes))
+            return True
+    print(t('invalid_interval'))
+    return False
+
 # ================= 功能函数 =================
+
+def set_startup():
+    """设置开机自启动"""
+    if os.name == 'nt':
+        # Windows系统
+        startup_folder = os.path.join(os.environ['APPDATA'], 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'Startup')
+        vbs_path = os.path.join(startup_folder, 'gitboost_start.vbs')
+        bat_path = os.path.abspath('GitBoost_Pro.bat')
+        
+        vbs_content = f'CreateObject("WScript.Shell").Run "{bat_path}", 0, False'
+        
+        try:
+            with open(vbs_path, 'w', encoding='utf-8') as f:
+                f.write(vbs_content)
+            print("✅ 已设置开机自启动")
+            return True
+        except Exception as e:
+            print(f"❌ 设置开机自启动失败: {e}")
+            return False
+    else:
+        print("⚠️ 仅支持Windows系统设置开机自启动")
+        return False
+
+def remove_startup():
+    """移除开机自启动"""
+    if os.name == 'nt':
+        # Windows系统
+        startup_folder = os.path.join(os.environ['APPDATA'], 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'Startup')
+        vbs_path = os.path.join(startup_folder, 'gitboost_start.vbs')
+        
+        try:
+            if os.path.exists(vbs_path):
+                os.remove(vbs_path)
+                print("✅ 已移除开机自启动")
+            else:
+                print("ℹ️ 开机自启动未设置")
+            return True
+        except Exception as e:
+            print(f"❌ 移除开机自启动失败: {e}")
+            return False
+    else:
+        print("⚠️ 仅支持Windows系统移除开机自启动")
+        return False
+
+def set_update_interval_menu():
+    """设置自动更新时间间隔菜单"""
+    current_interval = get_update_interval()
+    print(f"\n{t('current_update_interval').format(current_interval)}")
+    
+    try:
+        input_str = input(t('set_update_interval')).strip()
+        if not input_str:
+            # 使用默认值5
+            set_update_interval(5)
+        else:
+            minutes = int(input_str)
+            set_update_interval(minutes)
+    except ValueError:
+        print(t('invalid_interval'))
+    input("\n按 [回车键] 继续...")
+
+def show_menu():
+    """显示功能菜单"""
+    print("\n" + "="*60)
+    print("🚀 GitBoost Pro - 功能菜单")
+    print("="*60)
+    print("1. 默认运行 (获取IP + 扫描仓库 + 更新Hosts + 刷新DNS)")
+    print("2. 设置开机自启动")
+    print("3. 移除开机自启动")
+    print("4. 设置自动更新时间")
+    print("5. 退出程序")
+    print("="*60)
+    print("提示: 直接按回车或输入其他数字将默认运行所有功能")
+    print("="*60)
 
 HOSTS_PATH_MAP = {
     'win32': r'C:\Windows\System32\drivers\etc\hosts',
@@ -113,17 +237,50 @@ HOSTS_PATH_MAP = {
     'linux': '/etc/hosts'
 }
 
-GITHUB_DOMAINS = [
-    'github.com',
-    'gist.github.com',
-    'assets-cdn.github.com',
-    'raw.githubusercontent.com',
-    'github.global.ssl.fastly.net',
-    'avatars.githubusercontent.com',
-    'collector.github.com',
-    'alive.github.com',
-    'api.github.com'
-]
+GITHUB_DOMAINS = {
+    'github.com': [
+        '185.199.108.153', '185.199.109.153', '185.199.110.153', '185.199.111.153',
+        '20.205.243.166', '20.205.243.167', '20.205.243.168',
+        '140.82.113.3', '140.82.113.4', '140.82.114.3', '140.82.114.4',
+        '192.30.255.112', '192.30.255.113'
+    ],
+    'api.github.com': [
+        '185.199.108.153', '185.199.109.153', '185.199.110.153', '185.199.111.153',
+        '20.205.243.166', '20.205.243.167', '20.205.243.168',
+        '192.30.255.116', '192.30.255.117'
+    ],
+    'raw.githubusercontent.com': [
+        '185.199.108.133', '185.199.109.133', '185.199.110.133', '185.199.111.133',
+        '199.232.68.133', '199.232.69.133'
+    ],
+    'avatars.githubusercontent.com': [
+        '185.199.108.133', '185.199.109.133', '185.199.110.133', '185.199.111.133',
+        '199.232.68.133', '199.232.69.133'
+    ],
+    'gist.github.com': [
+        '20.205.243.166', '20.205.243.167',
+        '192.30.255.118', '192.30.255.119'
+    ],
+    'collector.github.com': ['140.82.113.21', '140.82.114.21'],
+    'alive.github.com': ['140.82.114.26', '140.82.113.26'],
+    'assets-cdn.github.com': [
+        '185.199.108.153', '185.199.109.153', '185.199.110.153', '185.199.111.153',
+        '199.232.68.133', '199.232.69.133'
+    ],
+    'github.global.ssl.fastly.net': [
+        '151.101.1.194', '151.101.65.194', '151.101.129.194', '151.101.193.194',
+        '199.232.68.163', '199.232.69.163'
+    ],
+    'camo.githubusercontent.com': [
+        '185.199.108.133', '185.199.109.133', '185.199.110.133', '185.199.111.133'
+    ],
+    'github.io': [
+        '185.199.108.153', '185.199.109.153', '185.199.110.153', '185.199.111.153'
+    ],
+    'githubstatus.com': [
+        '185.199.108.153', '185.199.109.153', '185.199.110.153', '185.199.111.153'
+    ]
+}
 
 COMMON_ROOTS = [
     os.path.expanduser("~"),
@@ -165,6 +322,42 @@ def backup_hosts(hosts_path):
         print(t('backup_fail') + str(e))
         return False
 
+def test_ip_speed(ip, port=443, timeout=2):
+    """测试IP速度"""
+    try:
+        start = time.time()
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(timeout)
+        result = sock.connect_ex((ip, port))
+        latency = (time.time() - start) * 1000
+        sock.close()
+        return latency if result == 0 else None
+    except:
+        return None
+
+def find_fastest_ip(domain, ip_list):
+    """找到最快的IP地址"""
+    best_ip, best_latency = None, float('inf')
+    
+    # 测试所有IP地址
+    for ip in ip_list:
+        latency = test_ip_speed(ip)
+        if latency and latency < best_latency:
+            best_latency, best_ip = latency, ip
+    
+    if best_ip:
+        print(f"  {domain}: {best_ip} ({best_latency:.0f}ms) [最佳]")
+        return best_ip
+    
+    # 如果所有IP都测试失败，尝试DNS解析
+    try:
+        dns_ip = socket.gethostbyname(domain)
+        print(f"  {domain}: {dns_ip} (DNS) [备用]")
+        return dns_ip
+    except:
+        print(f"  {domain}: 无法解析 [失败]")
+        return None
+
 def resolve_ip(domain):
     try:
         # 修正拼写错误
@@ -180,15 +373,14 @@ def fetch_github_ips():
     ip_map = {}
     success_count = 0
     
-    for domain in GITHUB_DOMAINS:
-        print(f"{t('resolving')} {domain}...", end=" ")
-        ip = resolve_ip(domain)
+    for domain, ip_list in GITHUB_DOMAINS.items():
+        print(f"{t('resolving')} {domain}...")
+        ip = find_fastest_ip(domain, ip_list)
         if ip:
-            print(f"{t('success')} ({ip})")
             ip_map[domain] = ip
             success_count += 1
         else:
-            print(t('failed'))
+            print(f"  {domain}: {t('failed')}")
             
     return ip_map, success_count
 
@@ -356,6 +548,31 @@ def flush_dns():
     except Exception as e:
         print(t('dns_fail').format(str(e)))
 
+def default_run():
+    """默认运行所有功能"""
+    ip_map, success_count = fetch_github_ips()
+    if success_count == 0:
+        print("\n" + t('network_error'))
+        input(t('press_exit'))
+        return False
+
+    local_repos = find_local_repos()
+    
+    print("\n" + t('step4'))
+    if update_hosts_file(ip_map):
+        flush_dns()
+        print("\n" + "="*60)
+        print(t('all_done'))
+        print("="*60)
+        if local_repos:
+            print(t('repo_hint').format(len(local_repos)))
+        else:
+            print(t('no_repo_hint'))
+        return True
+    else:
+        print("\n" + t('hosts_update_fail'))
+        return False
+
 def main():
     # 清屏 (可选)
     # os.system('cls' if os.name == 'nt' else 'clear') 
@@ -373,29 +590,38 @@ def main():
         input(t('press_exit'))
         return
 
-    ip_map, success_count = fetch_github_ips()
-    if success_count == 0:
-        print("\n" + t('network_error'))
-        input(t('press_exit'))
-        return
-
-    local_repos = find_local_repos()
-    
-    print("\n" + t('step4'))
-    if update_hosts_file(ip_map):
-        flush_dns()
-        print("\n" + "="*60)
-        print(t('all_done'))
-        print("="*60)
-        if local_repos:
-            print(t('repo_hint').format(len(local_repos)))
+    # 显示菜单并处理用户选择
+    while True:
+        show_menu()
+        choice = input("请输入选项 (1-5): ").strip()
+        
+        if choice == '1':
+            # 默认运行
+            default_run()
+            input(t('press_close'))
+            break
+        elif choice == '2':
+            # 设置开机自启动
+            set_startup()
+            input("\n按 [回车键] 继续...")
+        elif choice == '3':
+            # 移除开机自启动
+            remove_startup()
+            input("\n按 [回车键] 继续...")
+        elif choice == '4':
+            # 设置自动更新时间
+            set_update_interval_menu()
+        elif choice == '5':
+            # 退出程序
+            print("\n👋 退出程序")
+            input(t('press_exit'))
+            break
         else:
-            print(t('no_repo_hint'))
-    else:
-        print("\n" + t('hosts_update_fail'))
-
-    # 强制等待
-    input(t('press_close'))
+            # 无效选择，默认运行
+            print("\n⚠️ 无效选择，默认运行所有功能")
+            default_run()
+            input(t('press_close'))
+            break
 
 if __name__ == "__main__":
     main()
