@@ -512,3 +512,54 @@ Updating hosts file...
 [2026-03-13 10:21:04] 
 Next check at: 10:26:04
 [2026-03-13 10:21:04] Waiting 300 seconds... (Check #12)
+[2026-03-13 10:26:04] ==================================================
+[2026-03-13 10:26:04] Checking GitHub IPs...
+[2026-03-13 10:26:06]   github.com: 20.205.243.167 (76ms)
+[2026-03-13 10:26:07]   api.github.com: 185.199.108.153 (79ms)
+[2026-03-13 10:26:07]   raw.githubusercontent.com: 185.199.111.133 (88ms)
+[2026-03-13 10:26:08]   avatars.githubusercontent.com: 185.199.111.133 (88ms)
+[2026-03-13 10:26:08] Error reading hosts: [Errno 2] No such file or directory: 'C:\\Windows\\System32\\drivers\\etc\\hosts'
+[2026-03-13 10:26:08]   github.com:  -> 20.205.243.167 [UPDATE]
+[2026-03-13 10:26:08]   api.github.com:  -> 185.199.108.153 [UPDATE]
+[2026-03-13 10:26:08]   raw.githubusercontent.com:  -> 185.199.111.133 [UPDATE]
+[2026-03-13 10:26:08]   avatars.githubusercontent.com:  -> 185.199.111.133 [UPDATE]
+[2026-03-13 10:26:08] 
+Updating hosts file...
+[2026-03-13 10:26:08]   Error updating hosts: [WinError 2] 系统找不到指定的文件。
+[2026-03-13 10:26:08] 
+Next check at: 10:31:08
+[2026-03-13 10:26:08] Waiting 300 seconds... (Check #13)
+[2026-03-13 10:31:08] ==================================================
+[2026-03-13 10:31:08] Checking GitHub IPs...
+[2026-03-13 10:31:11]   github.com: 20.205.243.168 (75ms)
+[2026-03-13 10:31:14]   api.github.com: 20.205.243.167 (75ms)
+[2026-03-13 10:31:14]   raw.githubusercontent.com: 185.199.109.133 (79ms)
+[2026-03-13 10:31:14]   avatars.githubusercontent.com: 185.199.111.133 (80ms)
+[2026-03-13 10:31:14] Error reading hosts: [Errno 2] No such file or directory: 'C:\\Windows\\System32\\drivers\\etc\\hosts'
+[2026-03-13 10:31:14]   github.com:  -> 20.205.243.168 [UPDATE]
+[2026-03-13 10:31:14]   api.github.com:  -> 20.205.243.167 [UPDATE]
+[2026-03-13 10:31:14]   raw.githubusercontent.com:  -> 185.199.109.133 [UPDATE]
+[2026-03-13 10:31:14]   avatars.githubusercontent.com:  -> 185.199.111.133 [UPDATE]
+[2026-03-13 10:31:14] 
+Updating hosts file...
+[2026-03-13 10:31:14]   Error updating hosts: [WinError 2] 系统找不到指定的文件。
+[2026-03-13 10:31:14] 
+Next check at: 10:36:14
+[2026-03-13 10:31:14] Waiting 300 seconds... (Check #14)
+[2026-03-13 10:36:14] ==================================================
+[2026-03-13 10:36:14] Checking GitHub IPs...
+[2026-03-13 10:36:18]   github.com: 20.205.243.168 (77ms)
+[2026-03-13 10:36:19]   api.github.com: 20.205.243.166 (78ms)
+[2026-03-13 10:36:19]   raw.githubusercontent.com: 185.199.111.133 (86ms)
+[2026-03-13 10:36:19]   avatars.githubusercontent.com: 185.199.109.133 (79ms)
+[2026-03-13 10:36:19] Error reading hosts: [Errno 2] No such file or directory: 'C:\\Windows\\System32\\drivers\\etc\\hosts'
+[2026-03-13 10:36:19]   github.com:  -> 20.205.243.168 [UPDATE]
+[2026-03-13 10:36:19]   api.github.com:  -> 20.205.243.166 [UPDATE]
+[2026-03-13 10:36:19]   raw.githubusercontent.com:  -> 185.199.111.133 [UPDATE]
+[2026-03-13 10:36:19]   avatars.githubusercontent.com:  -> 185.199.109.133 [UPDATE]
+[2026-03-13 10:36:19] 
+Updating hosts file...
+[2026-03-13 10:36:19]   Error updating hosts: [WinError 2] 系统找不到指定的文件。
+[2026-03-13 10:36:19] 
+Next check at: 10:41:19
+[2026-03-13 10:36:19] Waiting 300 seconds... (Check #15)
