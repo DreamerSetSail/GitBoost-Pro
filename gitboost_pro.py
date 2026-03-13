@@ -78,7 +78,16 @@ TEXT = {
         'current_update_interval': "当前自动更新时间间隔: {} 分钟",
         'set_update_interval': "请输入自动更新时间间隔 (1-1440 分钟，默认 5 分钟): ",
         'update_interval_set': "✅ 自动更新时间间隔已设置为 {} 分钟",
-        'invalid_interval': "⚠️ 无效的时间间隔，请输入 1-1440 之间的数字"
+        'invalid_interval': "⚠️ 无效的时间间隔，请输入 1-1440 之间的数字",
+        'menu_title': "🚀 GitBoost Pro - 功能菜单",
+        'menu_1': "1. 默认运行",
+        'menu_1_desc': "   (获取IP + 扫描仓库 + 更新Hosts + 刷新DNS)",
+        'menu_2': "2. 设置开机自启动",
+        'menu_3': "3. 移除开机自启动",
+        'menu_4': "4. 设置自动更新时间",
+        'menu_5': "5. 退出程序",
+        'menu_hint': "提示: 直接按回车或输入其他数字将默认运行所有功能",
+        'menu_select': "请输入选项 (1-5): "
     },
     'en': {
         'title': "🚀 GitBoost Pro - GitHub Accelerator & Repo Scanner",
@@ -110,7 +119,16 @@ TEXT = {
         'current_update_interval': "Current auto-update interval: {} minutes",
         'set_update_interval': "Please enter auto-update interval (1-1440 minutes, default 5): ",
         'update_interval_set': "✅ Auto-update interval set to {} minutes",
-        'invalid_interval': "⚠️ Invalid interval, please enter a number between 1-1440"
+        'invalid_interval': "⚠️ Invalid interval, please enter a number between 1-1440",
+        'menu_title': "🚀 GitBoost Pro - Function Menu",
+        'menu_1': "1. Default Run",
+        'menu_1_desc': "   (Fetch IP + Scan Repos + Update Hosts + Flush DNS)",
+        'menu_2': "2. Set Auto-Start on Boot",
+        'menu_3': "3. Remove Auto-Start",
+        'menu_4': "4. Set Auto-Update Time",
+        'menu_5': "5. Exit Program",
+        'menu_hint': "Hint: Press Enter or input other numbers to run default functions",
+        'menu_select': "Please enter option (1-5): "
     }
 }
 
@@ -220,15 +238,16 @@ def set_update_interval_menu():
 def show_menu():
     """显示功能菜单"""
     print("\n" + "="*60)
-    print("🚀 GitBoost Pro - 功能菜单")
+    print(t('menu_title'))
     print("="*60)
-    print("1. 默认运行 (获取IP + 扫描仓库 + 更新Hosts + 刷新DNS)")
-    print("2. 设置开机自启动")
-    print("3. 移除开机自启动")
-    print("4. 设置自动更新时间")
-    print("5. 退出程序")
+    print(t('menu_1'))
+    print(t('menu_1_desc'))
+    print(t('menu_2'))
+    print(t('menu_3'))
+    print(t('menu_4'))
+    print(t('menu_5'))
     print("="*60)
-    print("提示: 直接按回车或输入其他数字将默认运行所有功能")
+    print(t('menu_hint'))
     print("="*60)
 
 HOSTS_PATH_MAP = {
@@ -593,7 +612,7 @@ def main():
     # 显示菜单并处理用户选择
     while True:
         show_menu()
-        choice = input("请输入选项 (1-5): ").strip()
+        choice = input(t('menu_select')).strip()
         
         if choice == '1':
             # 默认运行
